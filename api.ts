@@ -1,3 +1,4 @@
+import { log } from "@clack/prompts";
 import type { Browser } from "puppeteer";
 
 export async function validateUsername(
@@ -12,36 +13,78 @@ export async function validateUsername(
 	}
 	await page.$(".header-title");
 
-	// fill the birthday
-	await page.type("#MonthDropdown", "january");
-	await page.type("#DayDropdown", "1");
-	await page.type("#YearDropdown", "2000");
+	// fill the birthday if empty
+	if (
+		!(await page.$eval(
+			"#MonthDropdown",
+			(el) => (el as HTMLSelectElement).value,
+		))
+	) {
+		await page.type("#MonthDropdown", "january");
+	}
+	if (
+		!(await page.$eval("#DayDropdown", (el) => (el as HTMLSelectElement).value))
+	) {
+		await page.type("#DayDropdown", "1");
+	}
+	if (
+		!(await page.$eval(
+			"#YearDropdown",
+			(el) => (el as HTMLSelectElement).value,
+		))
+	) {
+		await page.type("#YearDropdown", "2000");
+	}
 
-	// enter password
+	// clear and enter password
+	await page.evaluate(() => {
+		const passwordInput = document.querySelector(
+			"#signup-password",
+		) as HTMLInputElement;
+		if (passwordInput) {
+			passwordInput.value = "";
+		}
+	});
 	await page.type("#signup-password", "password");
 
 	// fill the username
+	await page.evaluate(() => {
+		const usernameInput = document.querySelector(
+			"#signup-username",
+		) as HTMLInputElement;
+		if (usernameInput) {
+			usernameInput.value = "";
+		}
+	});
 	await page.type("#signup-username", name);
 
-	// wait for #signup-passwordInputValidation to change
-	await page.waitForFunction(() => {
-		const el = document.querySelector("#signup-usernameInputValidation");
-		return el?.textContent ? el.textContent.length > 0 : false;
+	let usernameRes: { valid: boolean; err?: string } = {
+		valid: false,
+		err: "something unknown happened",
+	};
+	await new Promise<void>((resolve) => {
+		page.on("requestfinished", async (request) => {
+			const response = request.response();
+
+			if (!response) return;
+
+			if (request.redirectChain().length === 0) {
+				// Because body can only be accessed for non-redirect responses.
+				const responseBody = await response.json().catch(() => null);
+				if (responseBody) {
+					if (responseBody.code === 1 || responseBody.code === 0) {
+						usernameRes = {
+							valid: responseBody.code === 0,
+							err: responseBody.code === 1 ? responseBody.message : undefined,
+						};
+
+						page.removeAllListeners("requestfinished");
+						resolve();
+					}
+				}
+			}
+		});
 	});
 
-	// get the #signup-usernameInputValidation p element text
-	const errorText = await page.evaluate(() => {
-		const el = document.querySelector("#signup-usernameInputValidation");
-		return el ? el.textContent : "";
-	});
-
-	let returner: { valid: boolean; err?: string };
-	// check if the username is valid
-	if (errorText && errorText.length > 0) {
-		returner = { valid: false, err: errorText };
-	} else {
-		returner = { valid: true };
-	}
-
-	return returner;
+	return usernameRes;
 }
