@@ -1,7 +1,7 @@
 # roblox-chcker
 
 <figure align="center">
-  <figimage align="center" src="https://github.com/kcoderhtml/roblox-chcker/blob/master/.github/images/logo.png?raw=true" alt="square icon with funky orange and blue firey edges"/>
+  <img align="center" src="https://github.com/kcoderhtml/roblox-chcker/blob/master/.github/images/logo.png?raw=true" alt="square icon with funky orange and blue firey edges"/>
   <figcaption><i>Roblox tools :)</i></figcaption>
 </figure>
 
