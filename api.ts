@@ -37,26 +37,20 @@ export async function validateUsername(
 	}
 
 	// clear and enter password
-	await page.evaluate(() => {
-		const passwordInput = document.querySelector(
-			"#signup-password",
-		) as HTMLInputElement;
-		if (passwordInput) {
-			passwordInput.value = "";
-		}
-	});
-	await page.type("#signup-password", "password");
+	const input = await page.$("#signup-password");
+	if (!input) {
+		throw new Error("Couldn't find the password input");
+	}
+	await input?.click({ count: 2 });
+	await input.type("password", { delay: 2 });
 
 	// fill the username
-	await page.evaluate(() => {
-		const usernameInput = document.querySelector(
-			"#signup-username",
-		) as HTMLInputElement;
-		if (usernameInput) {
-			usernameInput.value = "";
-		}
-	});
-	await page.type("#signup-username", name);
+	const usernameInput = await page.$("#signup-username");
+	if (!usernameInput) {
+		throw new Error("Couldn't find the username input");
+	}
+	await usernameInput.click({ count: 2 });
+	await usernameInput.type(name, { delay: 2 });
 
 	let usernameRes: { valid: boolean; err?: string } = {
 		valid: false,
@@ -69,18 +63,14 @@ export async function validateUsername(
 			if (!response) return;
 
 			if (request.redirectChain().length === 0) {
-				// Because body can only be accessed for non-redirect responses.
 				const responseBody = await response.json().catch(() => null);
-				if (responseBody) {
-					if (responseBody.code === 1 || responseBody.code === 0) {
-						usernameRes = {
-							valid: responseBody.code === 0,
-							err: responseBody.code === 1 ? responseBody.message : undefined,
-						};
-
-						page.removeAllListeners("requestfinished");
-						resolve();
-					}
+				if (responseBody && [0, 1, 2].includes(responseBody.code)) {
+					usernameRes = {
+						valid: responseBody.code === 0,
+						err: responseBody.code !== 0 ? responseBody.message : undefined,
+					};
+					page.removeAllListeners("requestfinished");
+					resolve();
 				}
 			}
 		});
