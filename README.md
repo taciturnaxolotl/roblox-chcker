@@ -3,7 +3,7 @@
 <p align="center">
   <img src="https://github.com/kcoderhtml/roblox-chcker/blob/master/.github/images/logo.png?raw=true" alt="square icon with funky orange and blue firey edges"/>
 
-  *Roblox tools :)*
+  <i>Roblox tools :)</i>
 </p>
 
 
