@@ -54,6 +54,16 @@ s.stop(
 	`Checked ${names.length} names with ${results.filter((r) => r.valid).length} valid names`,
 );
 
+log.info("Results");
+
+for (const { name, valid, err } of results) {
+	if (valid) {
+		log.success(`${name} works!`);
+	} else {
+		log.warn(`${name}: ${err}`);
+	}
+}
+
 outro("Bye!");
 
 await browser.close();
