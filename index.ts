@@ -125,7 +125,7 @@ s.stop(
 	`Checked ${names.length} names with ${results.filter((r) => r.valid).length} valid names`,
 );
 
-log.info("Results");
+log.info(`Result${results.length > 1 ? "s" : ""}`);
 
 for (const { name, valid, err } of results) {
 	if (valid) {
