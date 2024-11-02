@@ -20,6 +20,7 @@ const choice = await select({
 	options: [
 		{ label: "Check a username", value: "check" },
 		{ label: "Check a list of usernames", value: "check-list" },
+		{ label: "Generate a list of usernames", value: "generate" },
 		{ label: "Exit", value: "exit" },
 	],
 });
@@ -48,6 +49,32 @@ switch (choice) {
 			},
 		});
 		break;
+	case "generate": {
+		// get the length of username to generate
+		const count = await text({
+			message: "Enter the length of username to generate:",
+			validate(value) {
+				if (Number.isNaN(Number(value))) {
+					return "Please enter a number";
+				}
+			},
+		}).then((value) => Number(value));
+
+		// generate every possible username combination
+		const alphabet = "abcdefghijklmnopqrstuvwxyz";
+		const usernames = [];
+		for (let i = 0; i < count; i++) {
+			for (let j = 0; j < alphabet.length; j++) {
+				for (let k = 0; k < alphabet.length; k++) {
+					usernames.push(`${alphabet[i]}${alphabet[j]}${alphabet[k]}`);
+				}
+			}
+		}
+
+		username = usernames.join(",");
+
+		break;
+	}
 	default:
 		outro("Bye!");
 		await browser.close();
