@@ -153,6 +153,8 @@ log.info(`Result${results.length > 1 ? "s" : ""}`);
 for (const { name, valid, err } of results) {
 	if (valid) {
 		log.success(`${name} works!`);
+	} else if (results.length < 100) {
+		log.warn(`${name} doesn't work: ${err}`);
 	}
 }
 
