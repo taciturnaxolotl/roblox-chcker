@@ -21,6 +21,9 @@ Run:
 ```bash
 bun run index.ts
 ```
+
+![demo gif](.github/images/out.gif)
+
 ---
 
 _© 2024 Kieran Klukas_  
