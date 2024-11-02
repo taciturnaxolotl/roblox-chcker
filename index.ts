@@ -20,7 +20,10 @@ const choice = await select({
 	options: [
 		{ label: "Check a username", value: "check" },
 		{ label: "Check a list of usernames", value: "check-list" },
-		{ label: "Generate a list of usernames", value: "generate" },
+		{
+			label: "Generate even underscore usernames",
+			value: "generate-underscore",
+		},
 		{ label: "Exit", value: "exit" },
 	],
 });
@@ -49,30 +52,17 @@ switch (choice) {
 			},
 		});
 		break;
-	case "generate": {
-		// get the length of username to generate
-		const count = await text({
-			message: "Enter the length of username to generate:",
-			validate(value) {
-				if (Number.isNaN(Number(value))) {
-					return "Please enter a number";
-				}
-			},
-		}).then((value) => Number(value));
-
+	case "generate-underscore": {
 		// generate every possible username combination
-		const alphabet = "abcdefghijklmnopqrstuvwxyz";
+		const alphabet = "abcdefghijklmnopqrstuvwxyz1234567890";
 		const usernames = [];
-		for (let i = 0; i < count; i++) {
+		for (let i = 0; i < alphabet.length; i++) {
 			for (let j = 0; j < alphabet.length; j++) {
-				for (let k = 0; k < alphabet.length; k++) {
-					usernames.push(`${alphabet[i]}${alphabet[j]}${alphabet[k]}`);
-				}
+				usernames.push(`${alphabet[i]}_${alphabet[j]}`);
 			}
 		}
 
 		username = usernames.join(",");
-
 		break;
 	}
 	default:
@@ -163,8 +153,6 @@ log.info(`Result${results.length > 1 ? "s" : ""}`);
 for (const { name, valid, err } of results) {
 	if (valid) {
 		log.success(`${name} works!`);
-	} else {
-		log.warn(`${name}: ${err}`);
 	}
 }
 
