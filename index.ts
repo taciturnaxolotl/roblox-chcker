@@ -1,4 +1,12 @@
-import { intro, outro, text, spinner, log, isCancel } from "@clack/prompts";
+import {
+	intro,
+	outro,
+	text,
+	spinner,
+	log,
+	isCancel,
+	select,
+} from "@clack/prompts";
 import puppeteer from "puppeteer";
 
 import { validateUsername } from "./api";
@@ -7,14 +15,44 @@ const browser = await puppeteer.launch({ headless: false });
 
 intro("Roblox Chcker");
 
-const username = await text({
-	message: "Enter a list of names to check sepperated by commas:",
-	validate(value) {
-		if (value.length < 3) {
-			return "Username is too short";
-		}
-	},
+const choice = await select({
+	message: "What would you like to do?",
+	options: [
+		{ label: "Check a username", value: "check" },
+		{ label: "Check a list of usernames", value: "check-list" },
+		{ label: "Exit", value: "exit" },
+	],
 });
+
+let username: string | symbol;
+
+switch (choice) {
+	case "check":
+		username = await text({
+			message: "Enter the username to check:",
+			validate(value) {
+				if (value.length < 3) {
+					return "Username is too short";
+				}
+			},
+		});
+
+		break;
+	case "check-list":
+		username = await text({
+			message: "Enter a list of names to check sepperated by commas:",
+			validate(value) {
+				if (value.length < 3) {
+					return "Username is too short";
+				}
+			},
+		});
+		break;
+	default:
+		outro("Bye!");
+		await browser.close();
+		process.exit(0);
+}
 
 if (isCancel(username)) {
 	outro("Bye!");
