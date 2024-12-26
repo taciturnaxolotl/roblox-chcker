@@ -34,6 +34,8 @@ Example that checks usernames from `usernames.txt` in the current directory:
 cat usernames.txt | bun run index.ts
 ```
 
+To use a web browser as the checking backend, add `--puppeteer` to the end of the command.
+
 ---
 
 _© 2024 Kieran Klukas_  
