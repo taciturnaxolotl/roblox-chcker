@@ -6,13 +6,15 @@
 		"dev": "bun run --watch index.ts"
 	},
 	"devDependencies": {
-		"@types/bun": "latest"
+		"@types/bun": "latest",
+		"@types/he": "^1.2.3"
 	},
 	"peerDependencies": {
 		"typescript": "^5.0.0"
 	},
 	"dependencies": {
 		"@clack/prompts": "^0.7.0",
+		"he": "^1.2.0",
 		"puppeteer": "^23.6.1"
 	}
 }
